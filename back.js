@@ -1,5 +1,5 @@
-
-// Je vais chercher le driver sqlite3 dans node_modules
+// Exercice effectué sur DBfiddle en MySQL v5.7 sur le fichier hogwarts.js
+// A réécrire en SQLite
 
 const fs = require('fs');
 const sqlite3 = require('sqlite3').verbose();
@@ -14,13 +14,11 @@ app.use(cors());
 
 db.serialize(() => {
 
-    if (fs.existsSync(dbfile)) {
-        db.run('CREATE TABLE products (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, price INTEGER, like BOOLEAN)');
+    db.run('CREATE TABLE IF NOT EXISTS products (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT UNIQUE, price INTEGER, like BOOLEAN)');
+    db.run('INSERT INTO products (name, price, like) VALUES (?, ?, ?)', 'PS4', 350, true);
+    db.run('INSERT INTO products (name, price, like) VALUES (?, ?, ?)', 'Xbox', 280, false);
+    db.run('INSERT INTO products (name, price, like) VALUES (?, ?, ?)', 'Switch', 300, false);
 
-        db.run('INSERT INTO products (name, price, like) VALUES (?, ?, ?)', 'PS4', 350, true);
-        db.run('INSERT INTO products (name, price, like) VALUES (?, ?, ?)', 'Xbox', 280, false);
-        db.run('INSERT INTO products (name, price, like) VALUES (?, ?, ?)', 'Switch', 300, false);
-    };
 
     db.all('SELECT id, name, price, like FROM products', function (error, data) {
         if (!error) console.log(data);
@@ -34,6 +32,8 @@ db.serialize(() => {
 
 
 });
+
+// Reste des erreurs à corriger sur le lien entre back et front
 
 app.get('/', function (request, response) {
     db.all("SELECT * FROM products", function (error, data) {
